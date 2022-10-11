@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "timestamp": "Sat Oct 10 2022",
+    "title": "Notebook LENOVO",
+    "descripcion": "I5 Lenovo",
+    "codigo": "NTLi5",
+    "thumbnail": "https://ar-media.hptiendaenlinea.com/catalog/product/cache/b3b166914d87ce343d4dc5ec5117b502/4/F/4F438LT-1_T1649108533.png",
+    "price": 30500,
+    "stock": 20
+  },
+  {
+    "id": 2,
+    "timestamp": "Sat Oct 10 2022",
+    "title": "Notebook LENOVO",
+    "descripcion": "I3 Lenovo",
+    "codigo": "NTLi3",
+    "thumbnail": "https://ar-media.hptiendaenlinea.com/catalog/product/cache/b3b166914d87ce343d4dc5ec5117b502/4/F/4F438LT-1_T1649108533.png",
+    "price": 12400,
+    "stock": 20
+  }
+]

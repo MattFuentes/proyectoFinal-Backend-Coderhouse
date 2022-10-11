@@ -1,0 +1,20 @@
+[{
+    "id": 4,
+    "timestamp": 1,
+    "title": "MONITOR SAMSUNG",
+    "descripcion": "LED 24PULG",
+    "codigo": "AU7000",
+    "thumbnail": "https://samsungar.vtexassets.com/arquivos/ids/169038-1200-auto?width=1200&height=auto&aspect=true",
+    "price": 375,
+    "stock": 10
+},
+
+{
+    "id": 5,
+    "title": "SMART TV FULL HD",
+    "descripcion": "43PULG",
+    "codigo": "T5300",
+    "thumbnail": "https://samsungar.vtexassets.com/arquivos/ids/180360-1200-auto?width=1200&height=auto&aspect=true",
+    "price": 875,
+    "stock": 15
+}]
