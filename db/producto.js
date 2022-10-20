@@ -1,72 +1,106 @@
-const db = require('./productos.json')
-const { guardaEnBase } = require('./utils')
+const knex = require("knex");
 
+class Products {
+  constructor(tableName, dbConfig) {
+    (this.table = tableName), (this.knex = knex(dbConfig));
 
-
-const traeTodosProductos = () => {
-    return db
-}
-
-const traeUnProducto = (idProd) => {
-    const prodId = db.find(prod => prod.id == idProd)
-    if (!prodId) {
-        return { error: 'producto no encontrado' }
-    }
-    return prodId
-}
-
-const creaNuevoProducto = (nvoProducto) => {
-    const pdtoYaExiste = db.findIndex((obj) => obj.id === nvoProducto.id) > -1
-    if (pdtoYaExiste) {
-        return { error: "producto ya existe" }
-    }
-    db.push(nvoProducto)
-    guardaEnBase(db)
-    return nvoProducto
-}
-
-const actualizaUnProducto = (prodId, cambio) => {
-    try {
-        const cambioYaHecho = db.findIndex((prod) => prod.id === cambio.id) > -1;
-        if (cambioYaHecho) {
-            throw { status: 400, message: `cambio en ${cambio.id} ya se hizo` }
-        };
-        const indicePorActualizar = db.findIndex((prod) => prod.id === +prodId)
-
-        if (indicePorActualizar === -1) {
-            return { error: "producto no existe" }
+    this.knex.schema
+      .hasTable(this.table)
+      .then((exists) => {
+        if (!exists) {
+          return this.knex.schema.createTable(this.table, (table) => {
+            table.increments("id").notNullable().primary();
+            table.string("title", 100).notNullable();
+            table.string("thumbnail").notNullable();
+            table.float("price").notNullable();
+          });
         }
-        const actualProducto = {
-            ...db[indicePorActualizar],
-            ...cambio,
+      })
+      .catch((err) => console.log("error en constructor", err));
+  }
 
-
-        }
-        db[indicePorActualizar] = actualProducto
-        guardaEnBase(db)
-        return db
-    } catch (error) {
-        throw { status: error?.status || 500, message: error?.message || error }
-    }
-}
-
-const eliminaUnProducto = (idEliminar) => {
+  async getAll() {
     try {
-
-        const indiceProdEliminar = db.findIndex(prod => prod.id === +idEliminar)
-
-        if (indiceProdEliminar === -1) { throw { error: 'producto no econtrado' } }
-        db.splice(indiceProdEliminar, 1)
-        guardaEnBase(db)
+      const products = await this.knex
+        .from(this.table)
+        .select("id", "title", "price"/* , "thumbnail" */);
+      console.table(products);
+      return products;
     } catch (error) {
-        throw { status: error?.status || 500, message: error?.message || error }
+      console.log(error);
+    } finally {
+       /* this.knex.destroy() */
     }
+  }
+
+  async getById(id) {
+    try {
+      const product = await this.knex
+        .from(this.table)
+        .select("id", "title", "price", "thumbnail")
+        .where({ id: id });
+      console.table(product);
+    } catch (error) {
+      console.log("error al obtener producto", error);
+    } finally {
+      /* knex(this.config).destroy(); */
+    }
+  }
+
+  async save(product) {
+    const { title, price, thumbnail } = product;
+    if (!title || !price || !thumbnail) {
+      return null;
+    }
+
+    const newProduct = {
+      title,
+      price,
+      thumbnail,
+    };
+
+    try {
+      await this.knex(this.table).insert(newProduct);
+    } catch (error) {
+      console.log(error);
+    } finally {
+       /* this.knex.destroy() */
+    }
+
+    return {
+      message: "Product Created",
+      product: newProduct,
+    };
+  }
+
+  async update(id, product) {
+    const { title, price, thumbnail} = product;
+    try {
+      await this.knex.from(this.table)
+      .where({ id: id })
+      .update({
+        title: title,
+        price: price,
+        thumbnail: thumbnail,
+      });
+    } catch (error) {
+      console.log("error al actualizar producto", error);
+    } finally {
+      /* knex(this.config).destroy(); */
+    }
+    return { message: "Product updated OK" };
+  }
+
+  async deleteById(id) {
+    try {
+      await this.knex.from(this.table).where({ id }).del();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      /*       this.knex.destroy() */
+    }
+    return { message: "Products was deleted OK" };
+  }
 }
 
-module.exports = {
-    traeTodosProductos,
-    traeUnProducto,
-    creaNuevoProducto,
-    actualizaUnProducto,
-    eliminaUnProducto
-}
+module.exports = Products;
